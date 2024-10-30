@@ -9,19 +9,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: python:3
+    container: python:3.9-slim  # Specifies a Python container for a consistent environment
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade flake8                    # Upgrade flake8 to the latest version
-          pip install importlib-metadata==4.13.0          # Install a compatible version of importlib_metadata
+          pip install flake8==5.0.4 importlib-metadata==4.13.0  # Compatible versions to avoid 'entry_points' error
           pip install -r requirements.txt
+
       - name: Lint with flake8
         run: |
           flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
-      - name: Run unit tests with nose       
+
+      - name: Run unit tests with nose
         run: nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
